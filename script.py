@@ -1,11 +1,22 @@
+#Developer Aser
+#Import requirments 
 import requests
 from rich.console import Console
 from rich.table import Table
 from rich import box
 
-API_KEY = '7019e61a0defc22ac9d5f8c07a896d1f'  # Your OpenWeatherMap API key
-BASE_URL = 'http://api.openweathermap.org/data/2.5/weather'
+API_KEY = '7019e61a0defc22ac9d5f8c07a896d1f'  # OpenWeatherMap API key
+BASE_URL = 'http://api.openweathermap.org/data/2.5/weather' #OpenWeatherMap Website
 
+# List of cities I know!
+CITIES = [
+    "New York", "Los Angeles", "Chicago", "Houston", "Phoenix",
+    "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose",
+    "Austin", "Jacksonville", "Fort Worth", "Columbus", "Charlotte",
+    "San Francisco", "Indianapolis", "Seattle", "Denver", "Washington"
+]
+
+# Using API key we get weather
 def get_weather(city):
     params = {
         'q': city,
@@ -15,6 +26,7 @@ def get_weather(city):
     response = requests.get(BASE_URL, params=params)
     return response.json()
 
+# We print it in a Table format because that is beautiful (I don't know UI very much)
 def display_weather(data):
     console = Console()
     
@@ -47,8 +59,27 @@ def display_weather(data):
 
     console.print(table)
 
-if __name__ == "__main__":
+# Choose from the list of cities
+def choose_city():
     console = Console()
-    city = console.input("[bold blue]Enter city name:[/bold blue] ")
+    table = Table(title="Choose a City", box=box.SQUARE)
+
+    table.add_column("Number", justify="right", style="cyan", no_wrap=True)
+    table.add_column("City", style="magenta")
+
+    for idx, city in enumerate(CITIES, start=1):
+        table.add_row(str(idx), city)
+
+    console.print(table)
+    while True:
+        choice = console.input("[bold blue]Enter the number of the city:[/bold blue] ")
+        if choice.isdigit() and 1 <= int(choice) <= len(CITIES):
+            return CITIES[int(choice) - 1]
+        else:
+            console.print("[bold red]Invalid choice, please enter a valid number.[/bold red]")
+
+# START
+if __name__ == "__main__":
+    city = choose_city()
     weather_data = get_weather(city)
     display_weather(weather_data)
